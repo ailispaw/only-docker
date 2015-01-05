@@ -97,3 +97,5 @@ RUN cd /usr/src/only-docker && \
         -b boot/isolinux/isolinux.bin -c boot/isolinux/boot.cat \
         -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
         -o /only-docker.iso $(pwd)
+
+CMD ["cat", "only-docker.iso"]

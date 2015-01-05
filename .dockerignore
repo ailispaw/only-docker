@@ -1,0 +1,17 @@
+.DS_Store
+
+.dockerignore
+.gitignore
+.git/
+
+dist/
+kvm/
+build.sh
+LICENSE
+README.md
+
+Makefile
+Vagrantfile
+.vagrant/
+
+*.iso
