@@ -39,4 +39,4 @@ echo 'nameserver 8.8.8.8' > /etc/resolv.conf
 openvt /bin/sh
 openvt -s /bin/console-container.sh
 
-exec docker -d -D -s overlay
+exec docker -d -D -s overlay -g /var/lib/docker -H unix:// -H tcp://0.0.0.0:2375
