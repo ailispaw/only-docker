@@ -15,9 +15,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     iso.vm.synced_folder ".", "/vagrant"
 
-    iso.vm.provision :docker do |d|
-      d.build_image "/vagrant/", args: "-t only-docker"
-      d.run "only-docker", args: "--rm", cmd: "> /vagrant/only-docker.iso",
+    iso.vm.provision :docker do |docker|
+      docker.build_image "/vagrant/", args: "-t only-docker"
+      docker.run "only-docker", args: "--rm", cmd: "> /vagrant/only-docker.iso",
         auto_assign_name: false, daemonize: false
     end
   end
@@ -44,17 +44,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     hdd.vm.network :forwarded_port, guest: 2375, host: 2375, disabled: true
 
-    hdd.vm.provision :shell do |s|
-      s.inline = <<-EOT
+    hdd.vm.provision :shell do |sh|
+      sh.inline = <<-EOT
         sudo mkfs.ext4 -F /dev/sdb
       EOT
     end
   end
 
-  config.vm.define "only-docker-test" do |box|
-    box.vm.box = "only-docker"
+  config.vm.define "only-docker-test" do |test|
+    test.vm.box = "only-docker"
 
-    box.vm.provider :virtualbox do |vb|
+    test.vm.provider :virtualbox do |vb|
       vb.name = "only-docker-test"
       vb.gui = true
     end
