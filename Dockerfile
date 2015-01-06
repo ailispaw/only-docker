@@ -64,6 +64,18 @@ RUN apt-get install -y \
     isolinux \
     xorriso
 
+# Build static dropbear
+COPY cross-compiler-x86_64.tar.bz2 /usr/src/
+RUN cd /usr/src && tar xjf cross-compiler-x86_64.tar.bz2
+COPY dropbear-2014.66.tar.bz2 /usr/src/
+RUN cd /usr/src && \
+    tar xjf dropbear-2014.66.tar.bz2 && \
+    cd dropbear-2014.66 && \
+    export PATH=$PATH:/usr/src/cross-compiler-x86_64/bin && \
+    export CC=x86_64-gcc && \
+    ./configure --disable-zlib --host=x86_64 && \
+    make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert" MULTI=1 STATIC=1
+
 # Start assembling root
 COPY assets/init /usr/src/root/
 COPY assets/console-container.sh /usr/src/root/bin/
@@ -74,6 +86,10 @@ RUN cd /usr/src/root/bin && \
     strip --strip-all iptables && \
     for i in mount modprobe mkdir openvt sh mknod; do \
         ln -s busybox $i; \
+    done && \
+    cp /usr/src/dropbear-2014.66/dropbearmulti . && \
+    for i in dropbear dbclient dropbearkey dropbearconvert; do \
+        ln -s dropbearmulti $i; \
     done && \
     cd .. && \
     mkdir -p ./etc/ssl/certs && \

@@ -1,6 +1,7 @@
 Vagrant.configure("2") do |config|
-  # Waiting for VM to boot, but it has no ssh connnection.
-  config.vm.boot_timeout = 20
+  config.ssh.shell = "sh"
+  config.ssh.username = "root"
+  config.ssh.insert_key = false
 
   # Forward the Docker port
   config.vm.network :forwarded_port, guest: 2375, host: 2375, auto_correct: true

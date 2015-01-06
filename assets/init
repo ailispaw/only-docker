@@ -12,6 +12,7 @@ mkdir /proc
 mkdir /sys
 mkdir /rw
 mkdir -p /var/lib/docker
+mkdir -p /var/lib/only-docker
 mkdir -p /var/run
 mkdir -p /dev/pts
 
@@ -25,16 +26,54 @@ for i in perf_event net_cls freezer devices blkio memory cpuacct cpu cpuset; do
     mount -t cgroup -o $i none /sys/fs/cgroup/$i
 done
 
-if ! mount -t ext4 /dev/sda /var/lib/docker; then
+mkdir -p /mnt/sda
+if ! mount -t ext4 /dev/sda /mnt/sda; then
     echo "Running from memory, this won't be good..."
     export IN_MEMORY=true
     sleep 2
+else
+    rm -rf /var/lib/docker
+    mkdir -p /mnt/sda/var/lib/docker
+    ln -s /mnt/sda/var/lib/docker /var/lib/docker
+
+    rm -rf /var/lib/only-docker
+    mkdir -p /mnt/sda/var/lib/only-docker
+    ln -s /mnt/sda/var/lib/only-docker /var/lib/only-docker
 fi
 
 modprobe overlay
 modprobe e1000
 
 echo 'nameserver 8.8.8.8' > /etc/resolv.conf
+
+# Configure Dropbear SSH
+mkdir -p /etc/dropbear
+if [ ! -d /var/lib/only-docker/dropbear ]; then
+    mv /etc/dropbear /var/lib/only-docker/
+else # if it exists, remove the ramdisk's ssh config, so that the hard drive's is properly linked
+    rm -rf /etc/dropbear
+fi
+ln -s /var/lib/only-docker/dropbear /etc/dropbear
+
+if [ ! -f /etc/dropbear/dropbear_rsa_host_key ]; then
+  dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key
+fi
+if [ ! -f /etc/dropbear/dropbear_dss_host_key ]; then
+  dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key
+fi
+dropbear
+
+# Add root user
+echo root:x:0:0:root:/root:/bin/sh > /etc/passwd
+chmod 755 /etc/passwd
+
+# Configuration for Vagrant
+mkdir -p /root/.ssh
+chmod 0700 /root/.ssh
+cat <<KEY >/root/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key
+KEY
+chmod 0600 /root/.ssh/authorized_keys
 
 openvt /bin/sh
 openvt -s /bin/console-container.sh
