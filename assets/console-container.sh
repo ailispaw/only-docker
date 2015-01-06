@@ -15,6 +15,7 @@ done
 echo Setting up network
 if ! docker inspect dhcp >/dev/null 2>&1; then
     docker import - dhcp < /.dhcp.tar
+    docker tag dhcp console-image:latest
 fi
 docker run --rm -it --net host --cap-add NET_ADMIN dhcp udhcpc -i eth0
 
@@ -37,7 +38,7 @@ while true; do
             --privileged \
             --net host \
             -it \
-            console-image:latest
+            console-image:latest sh
     fi
     sleep 1
 done
