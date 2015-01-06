@@ -6,5 +6,8 @@ sha1sums
 *.bz2
 *.xz
 *.iso
+*.vdi
+*.box
+*.zip
 
 .vagrant/

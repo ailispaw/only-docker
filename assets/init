@@ -25,7 +25,7 @@ for i in perf_event net_cls freezer devices blkio memory cpuacct cpu cpuset; do
     mount -t cgroup -o $i none /sys/fs/cgroup/$i
 done
 
-if ! mount /dev/sda /var/lib/docker; then
+if ! mount -t ext4 /dev/sda /var/lib/docker; then
     echo "Running from memory, this won't be good..."
     export IN_MEMORY=true
     sleep 2

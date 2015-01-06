@@ -13,5 +13,9 @@ README.md
 Makefile
 Vagrantfile
 .vagrant/
+vagrantfile.tpl
 
 *.iso
+*.vdi
+*.box
+*.zip
