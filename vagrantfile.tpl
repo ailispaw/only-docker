@@ -1,7 +1,6 @@
 Vagrant.configure("2") do |config|
   config.ssh.shell = "sh"
   config.ssh.username = "root"
-  config.ssh.insert_key = false
 
   # Forward the Docker port
   config.vm.network :forwarded_port, guest: 2375, host: 2375, auto_correct: true
