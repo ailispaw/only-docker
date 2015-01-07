@@ -13,7 +13,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     iso.vm.network :forwarded_port, guest: 2375, host: 2375, disabled: true
 
-    iso.vm.synced_folder ".", "/vagrant"
+    iso.vm.network "private_network", ip: "192.168.33.10"
+    iso.vm.synced_folder ".", "/vagrant", type: "nfs"
 
     iso.vm.provision :docker do |docker|
       docker.build_image "/vagrant/", args: "-t only-docker"
