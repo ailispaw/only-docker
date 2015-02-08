@@ -66,12 +66,13 @@ RUN apt-get install -y \
     xorriso
 
 # Build static dropbear
+ENV DROPBEAR_VERSION 2015.67
 COPY cross-compiler-x86_64.tar.bz2 /usr/src/
 RUN cd /usr/src && tar xjf cross-compiler-x86_64.tar.bz2
-COPY dropbear-2014.66.tar.bz2 /usr/src/
+COPY dropbear-$DROPBEAR_VERSION.tar.bz2 /usr/src/
 RUN cd /usr/src && \
-    tar xjf dropbear-2014.66.tar.bz2 && \
-    cd dropbear-2014.66 && \
+    tar xjf dropbear-$DROPBEAR_VERSION.tar.bz2 && \
+    cd dropbear-$DROPBEAR_VERSION && \
     export PATH=$PATH:/usr/src/cross-compiler-x86_64/bin && \
     export CC=x86_64-gcc && \
     ./configure --disable-zlib --host=x86_64 && \
@@ -88,7 +89,7 @@ RUN cd /usr/src/root/bin && \
     for i in mount modprobe mkdir openvt sh mknod; do \
         ln -s busybox $i; \
     done && \
-    cp /usr/src/dropbear-2014.66/dropbearmulti . && \
+    cp /usr/src/dropbear-$DROPBEAR_VERSION/dropbearmulti . && \
     for i in dropbear dbclient dropbearkey dropbearconvert; do \
         ln -s dropbearmulti $i; \
     done && \

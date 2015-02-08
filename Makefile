@@ -10,7 +10,8 @@ ISO_NAME := only-docker.iso
 VAGRANT := vagrant
 VBOXMNG := VBoxManage
 
-KERNEL_VERSION := 3.18.6
+KERNEL_VERSION   := 3.18.6
+DROPBEAR_VERSION := 2015.67
 
 box: $(BOX_NAME)
 
@@ -75,7 +76,7 @@ $(HDD_NAME):
 $(ISO_NAME): Dockerfile \
 	assets/console-container.sh assets/init assets/isolinux.cfg assets/kernel_config \
 	linux-$(KERNEL_VERSION).tar.xz iptables-1.4.21.tar.bz2 docker-1.4.1.tgz \
-	cross-compiler-x86_64.tar.bz2 dropbear-2014.66.tar.bz2
+	cross-compiler-x86_64.tar.bz2 dropbear-$(DROPBEAR_VERSION).tar.bz2
 	$(VAGRANT) up $(ISO_BUILDER) --no-provision
 	$(VAGRANT) provision $(ISO_BUILDER)
 	$(VAGRANT) suspend $(ISO_BUILDER)
@@ -92,8 +93,8 @@ docker-1.4.1.tgz:
 cross-compiler-x86_64.tar.bz2:
 	curl -OL http://uclibc.org/downloads/binaries/0.9.30.1/cross-compiler-x86_64.tar.bz2
 
-dropbear-2014.66.tar.bz2:
-	curl -OL https://matt.ucc.asn.au/dropbear/releases/dropbear-2014.66.tar.bz2
+dropbear-$(DROPBEAR_VERSION).tar.bz2:
+	curl -OL https://matt.ucc.asn.au/dropbear/releases/dropbear-$(DROPBEAR_VERSION).tar.bz2
 
 test: install
 	$(VAGRANT) destroy -f $(BOX_TESTER)
