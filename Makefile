@@ -10,6 +10,8 @@ ISO_NAME := only-docker.iso
 VAGRANT := vagrant
 VBOXMNG := VBoxManage
 
+KERNEL_VERSION := 3.18.6
+
 box: $(BOX_NAME)
 
 hdd: $(HDD_NAME)
@@ -72,14 +74,14 @@ $(HDD_NAME):
 
 $(ISO_NAME): Dockerfile \
 	assets/console-container.sh assets/init assets/isolinux.cfg assets/kernel_config \
-	linux-3.18.1.tar.xz iptables-1.4.21.tar.bz2 docker-1.4.1.tgz \
+	linux-$(KERNEL_VERSION).tar.xz iptables-1.4.21.tar.bz2 docker-1.4.1.tgz \
 	cross-compiler-x86_64.tar.bz2 dropbear-2014.66.tar.bz2
 	$(VAGRANT) up $(ISO_BUILDER) --no-provision
 	$(VAGRANT) provision $(ISO_BUILDER)
 	$(VAGRANT) suspend $(ISO_BUILDER)
 
-linux-3.18.1.tar.xz:
-	curl -OL https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.18.1.tar.xz
+linux-$(KERNEL_VERSION).tar.xz:
+	curl -OL https://www.kernel.org/pub/linux/kernel/v3.x/linux-$(KERNEL_VERSION).tar.xz
 
 iptables-1.4.21.tar.bz2:
 	curl -OL http://www.netfilter.org/projects/iptables/files/iptables-1.4.21.tar.bz2

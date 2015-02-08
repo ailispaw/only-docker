@@ -16,19 +16,20 @@ RUN cd /usr/src && \
     make -j4 LDFLAGS="-all-static"
 
 # Build kernel
-COPY linux-3.18.1.tar.xz /usr/src/
+ENV KERNEL_VERSION 3.18.6
+COPY linux-$KERNEL_VERSION.tar.xz /usr/src/
 RUN cd /usr/src && \
-    tar xJf linux-3.18.1.tar.xz
-COPY assets/kernel_config /usr/src/linux-3.18.1/.config
-RUN cd /usr/src/linux-3.18.1 && \
+    tar xJf linux-$KERNEL_VERSION.tar.xz
+COPY assets/kernel_config /usr/src/linux-$KERNEL_VERSION/.config
+RUN cd /usr/src/linux-$KERNEL_VERSION && \
     make oldconfig
 RUN apt-get install -y bc
-RUN cd /usr/src/linux-3.18.1 && \
+RUN cd /usr/src/linux-$KERNEL_VERSION && \
     make -j4 bzImage
-RUN cd /usr/src/linux-3.18.1 && \
+RUN cd /usr/src/linux-$KERNEL_VERSION && \
     make -j4 modules
 RUN mkdir -p /usr/src/root && \
-    cd /usr/src/linux-3.18.1 && \
+    cd /usr/src/linux-$KERNEL_VERSION && \
     make INSTALL_MOD_PATH=/usr/src/root modules_install firmware_install
 
 # Taken from boot2docker
@@ -98,7 +99,7 @@ RUN cd /usr/src/root/bin && \
 RUN mkdir -p /usr/src/only-docker/boot && \
     cd /usr/src/root && \
     find | cpio -H newc -o | lzma -c > ../only-docker/boot/initrd && \
-    cp /usr/src/linux-3.18.1/arch/x86_64/boot/bzImage ../only-docker/boot/vmlinuz
+    cp /usr/src/linux-$KERNEL_VERSION/arch/x86_64/boot/bzImage ../only-docker/boot/vmlinuz
 RUN mkdir -p /usr/src/only-docker/boot/isolinux && \
     cp /usr/lib/ISOLINUX/isolinux.bin /usr/src/only-docker/boot/isolinux && \
     cp /usr/lib/syslinux/modules/bios/ldlinux.c32 /usr/src/only-docker/boot/isolinux
