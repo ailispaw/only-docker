@@ -11,6 +11,7 @@ VAGRANT := vagrant
 VBOXMNG := VBoxManage
 
 KERNEL_VERSION   := 3.18.6
+DOCKER_VERSION   := 1.4.1
 DROPBEAR_VERSION := 2015.67
 
 box: $(BOX_NAME)
@@ -75,7 +76,7 @@ $(HDD_NAME):
 
 $(ISO_NAME): Dockerfile \
 	assets/console-container.sh assets/init assets/isolinux.cfg assets/kernel_config \
-	linux-$(KERNEL_VERSION).tar.xz iptables-1.4.21.tar.bz2 docker-1.4.1.tgz \
+	linux-$(KERNEL_VERSION).tar.xz iptables-1.4.21.tar.bz2 docker-$(DOCKER_VERSION).tgz \
 	cross-compiler-x86_64.tar.bz2 dropbear-$(DROPBEAR_VERSION).tar.bz2
 	$(VAGRANT) up $(ISO_BUILDER) --no-provision
 	$(VAGRANT) provision $(ISO_BUILDER)
@@ -87,8 +88,8 @@ linux-$(KERNEL_VERSION).tar.xz:
 iptables-1.4.21.tar.bz2:
 	curl -OL http://www.netfilter.org/projects/iptables/files/iptables-1.4.21.tar.bz2
 
-docker-1.4.1.tgz:
-	curl -OL https://get.docker.com/builds/Linux/x86_64/docker-1.4.1.tgz
+docker-$(DOCKER_VERSION).tgz:
+	curl -OL https://get.docker.com/builds/Linux/x86_64/docker-$(DOCKER_VERSION).tgz
 
 cross-compiler-x86_64.tar.bz2:
 	curl -OL http://uclibc.org/downloads/binaries/0.9.30.1/cross-compiler-x86_64.tar.bz2

@@ -48,10 +48,11 @@ RUN cd /usr/src/root/lib/modules && \
     rm -rf ./*/kernel/net/wireless/*
 
 # Install docker
+ENV DOCKER_VERSION 1.4.1
 RUN apt-get install -y ca-certificates
-COPY docker-1.4.1.tgz /usr/src/
+COPY docker-$DOCKER_VERSION.tgz /usr/src/
 RUN mkdir -p /usr/src/root/bin && \
-    tar xvzf /usr/src/docker-1.4.1.tgz --strip-components=3 -C /usr/src/root/bin
+    tar xvzf /usr/src/docker-$DOCKER_VERSION.tgz --strip-components=3 -C /usr/src/root/bin
 
 # Create dhcp image
 RUN /usr/src/root/bin/docker -s vfs -d --bridge none & \
