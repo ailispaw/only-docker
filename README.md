@@ -1,36 +1,43 @@
-# Only Docker
+# Only Docker Vagrant Box
 
 Running Docker as PID 1.  This is an experiment to see if I can build a system that boots with only the Linux kernel and the Docker binary and nothing else.  Currently I have a proof of concept running that seems to indicate this is feasible.  You may be of the opinion that this is awesome or the worst idea ever.  I think it's interesting, so let's just go with that.
 
+| | Only Docker | Boot2Docker |
+| --- | --- | --- |
+| **Size** | 17 MB | 23 MB |
+| **Kernel** | 3.18.6 x86_64 | 3.16.7 x86_64 |
+| **User Land** | BusyBox v1.22.1 x86_64 | Tiny Core Linux v5.4 x86 |
+| **Docker** | 1.4.1 | 1.4.1 |
+| **Storage Driver** | overlay | aufs |
+| **TLS** | | ✓ |
+| **VirtualBox FS** | | ✓ |
+
 ## Running
 
-Currently I only have this running under KVM and VirtualBox.
-
-### KVM
-
-Download `only-docker.tar.gz` from [releases](https://github.com/ibuildthecloud/only-docker/releases)
-```
-tar xvzf docker-only.tar.gz
-./dist/kvm/run.sh
-```
+Currently I only have this running under VirtualBox.
 
 ### VirtualBox
 
-Create a VM that boots from `dist/only-docker.iso`
+Download `only-docker.box` from [releases](https://github.com/ailispaw/only-docker/releases)
+```
+$ vagrant box add only-docker only-docker.box
+$ vagrant init -m only-docker
+$ vagrant up
+```
 
 ## Idea
 
 1. Create ramdisk that has Docker binary copied in as /init
 1. Register a new reexec hook so that Docker will run differently as init
 1. On start Docker will
-  1. Create any devices needed in dev
-  1. Mount /proc, /sys, cgroups
-  1. Mount LABEL=DOCKER to /var/lib/docker if it exists
-  1. Start regular dockerd process
+	1. Create any devices needed in dev
+	1. Mount /proc, /sys, cgroups
+	1. Mount LABEL=DOCKER to /var/lib/docker if it exists
+	1. Start regular Docker daemon process
 1. Network bootstrap
-  1. Do 'docker run --net host dhcp` to do DHCP
+	1. Do 'docker run --net host dhcp` to do DHCP
 1. Run "dom0" container
-  1. Start a priviledge container that can do further stuff like running udev, ssh, etc
+	1. Start a privileged container that can do further stuff like running udev, ssh, etc
 
 The "dom0" container follows a model very similar to Xen's dom0.  It is a special container that has extra privileges and runs basically like it is the host OS but it happens to be in a container.  Pretty cool to think about the idea of upgrading/restarting this container without a system reboot.
 
@@ -44,11 +51,12 @@ There are two main scripts: `init` and `console-container.sh`.  `init` is intend
 
 1. Docker still needs iptables binary, which in turn needs modprobe.
 1. Since I need to bootstrap DHCP I bundle a Docker image in the initrd that I can import on start.  This means I can't have *only* the Docker binary.
-1. How do you shutdown?  I guess it's a crash only design :)
 
 ## But I don't see Docker as PID 1?
 
-When the system boots and you get a console your in a container.  If you run `ps` you just see the container's processes.  By default a console is spawned on VT2 (Alt-F2) that is in the host OS.  If you switch to that console and run ps you will see that Docker is PID 1.
+When the system boots and you get a console in a container.  If you run `ps` you just see the container's processes.  By default a console is spawned on VT2 (Alt-F2) that is in the host OS.  If you switch to that console and run ps you will see that Docker is PID 1.
+
+**For Vagrant, just `vagrant ssh`.**
 
 ## Customizing
 
@@ -65,6 +73,8 @@ exit
 mke2fs -j /dev/sda
 ```
 Now reboot the virtual machine.
+
+**This Vagrant box mounts /dev/sda with 40GB persistent disk on /mnt/sda by default. And /var/lib/docker is linked to /mnt/sda/var/lib/docker.**
 
 # License
 Copyright (c) 2014 [Rancher Labs, Inc.](http://rancher.com)
