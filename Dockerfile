@@ -1,8 +1,6 @@
 FROM ubuntu:14.10
 RUN apt-get update
-RUN apt-get install -y \
-        busybox-static \
-        bc
+RUN apt-get install -y bc
 RUN apt-get build-dep -y --no-install-recommends iptables
 # This causes iptables to fail to compile... don't know why yet
 RUN apt-get purge -y libnfnetlink-dev
@@ -47,6 +45,34 @@ RUN cd /usr/src/root/lib/modules && \
     rm -rf ./*/kernel/net/mac80211/* && \
     rm -rf ./*/kernel/net/wireless/*
 
+# Install cross-compiler
+COPY cross-compiler-x86_64.tar.bz2 /usr/src/
+RUN cd /usr/src && tar xjf cross-compiler-x86_64.tar.bz2
+
+# Build static busybox
+ENV BUSYBOX_VERSION 1.23.1
+COPY busybox-$BUSYBOX_VERSION.tar.bz2 /usr/src/
+RUN cd /usr/src && \
+    tar xjf busybox-$BUSYBOX_VERSION.tar.bz2 && \
+    cd busybox-$BUSYBOX_VERSION && \
+    export PATH=$PATH:/usr/src/cross-compiler-x86_64/bin && \
+    make defconfig && \
+    sed -e 's/.*FEATURE_PREFER_APPLETS.*/CONFIG_FEATURE_PREFER_APPLETS=y/' -i .config  && \
+    sed -e 's/.*FEATURE_SH_STANDALONE.*/CONFIG_FEATURE_SH_STANDALONE=y/' -i .config  && \
+    sed -e 's/.*FEATURE_TOUCH_NODEREF=y/# CONFIG_FEATURE_TOUCH_NODEREF is not set/' -i .config && \
+    LDFLAGS="--static" make CROSS_COMPILE=x86_64- busybox
+
+# Build static dropbear
+ENV DROPBEAR_VERSION 2015.67
+COPY dropbear-$DROPBEAR_VERSION.tar.bz2 /usr/src/
+RUN cd /usr/src && \
+    tar xjf dropbear-$DROPBEAR_VERSION.tar.bz2 && \
+    cd dropbear-$DROPBEAR_VERSION && \
+    export PATH=$PATH:/usr/src/cross-compiler-x86_64/bin && \
+    export CC=x86_64-gcc && \
+    ./configure --disable-zlib --host=x86_64 && \
+    make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert" MULTI=1 STATIC=1
+
 # Install docker
 ENV DOCKER_VERSION 1.4.1
 RUN apt-get install -y ca-certificates
@@ -66,30 +92,17 @@ RUN apt-get install -y \
     isolinux \
     xorriso
 
-# Build static dropbear
-ENV DROPBEAR_VERSION 2015.67
-COPY cross-compiler-x86_64.tar.bz2 /usr/src/
-RUN cd /usr/src && tar xjf cross-compiler-x86_64.tar.bz2
-COPY dropbear-$DROPBEAR_VERSION.tar.bz2 /usr/src/
-RUN cd /usr/src && \
-    tar xjf dropbear-$DROPBEAR_VERSION.tar.bz2 && \
-    cd dropbear-$DROPBEAR_VERSION && \
-    export PATH=$PATH:/usr/src/cross-compiler-x86_64/bin && \
-    export CC=x86_64-gcc && \
-    ./configure --disable-zlib --host=x86_64 && \
-    make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert" MULTI=1 STATIC=1
-
 # Start assembling root
 COPY assets/init /usr/src/root/
 COPY assets/console-container.sh /usr/src/root/bin/
 RUN cd /usr/src/root/bin && \
-    cp /bin/busybox . && \
+    cp /usr/src/busybox-$BUSYBOX_VERSION/busybox . && \
     chmod u+s busybox && \
-    cp /usr/src/iptables-1.4.21/iptables/xtables-multi iptables && \
-    strip --strip-all iptables && \
-    for i in mount modprobe mkdir openvt sh mknod; do \
+    for i in sh mount mkdir modprobe; do \
         ln -s busybox $i; \
     done && \
+    cp /usr/src/iptables-1.4.21/iptables/xtables-multi iptables && \
+    strip --strip-all iptables && \
     cp /usr/src/dropbear-$DROPBEAR_VERSION/dropbearmulti . && \
     for i in dropbear dbclient dropbearkey dropbearconvert; do \
         ln -s dropbearmulti $i; \
