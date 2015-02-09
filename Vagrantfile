@@ -9,6 +9,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "only-docker-iso" do |iso|
     iso.vm.provider :virtualbox do |vb|
       vb.name = "only-docker-iso"
+      vb.memory = 1024
     end
 
     iso.vm.network :forwarded_port, guest: 2375, host: 2375, disabled: true
