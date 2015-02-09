@@ -32,6 +32,29 @@ module VagrantPlugins
   end
 end
 
+# Add change_host_name guest capability
+module VagrantPlugins
+  module GuestLinux
+    class Plugin < Vagrant.plugin("2")
+      guest_capability("linux", "change_host_name") do
+        Cap::ChangeHostName
+      end
+    end
+
+    module Cap
+      class ChangeHostName
+        def self.change_host_name(machine, name)
+          machine.communicate.tap do |comm|
+            if !comm.test("hostname -f | grep '^#{name}$' || hostname -s | grep '^#{name}$'")
+              comm.sudo("hostname #{name}")
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 Vagrant.configure("2") do |config|
   config.ssh.shell = "sh"
   config.ssh.username = "root"

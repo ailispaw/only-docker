@@ -56,6 +56,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "only-docker-test" do |test|
     test.vm.box = "only-docker"
 
+    test.vm.hostname = "only-docker-test"
+
     test.vm.provider :virtualbox do |vb|
       vb.name = "only-docker-test"
       vb.gui = true
