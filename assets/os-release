@@ -1,9 +1,9 @@
 NAME=OnlyDocker
-VERSION=0.2.0
+VERSION=0.2.1
 ID=only-docker
 ID_LIKE=busybox
-VERSION_ID=0.2.0
-PRETTY_NAME="OnlyDocker v0.2.0 (BusyBox v1.23.1)"
+VERSION_ID=0.2.1
+PRETTY_NAME="OnlyDocker v0.2.1 (BusyBox v1.23.1)"
 ANSI_COLOR="1;34"
 HOME_URL="https://atlas.hashicorp.com/ailispaw/boxes/only-docker"
 SUPPORT_URL="https://github.com/ailispaw/only-docker"
