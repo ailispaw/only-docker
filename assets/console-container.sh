@@ -37,6 +37,7 @@ while true; do
             -v /var/run/docker.sock:/var/run/docker.sock:ro \
             --privileged \
             --net host \
+            --name console \
             -it \
             console-image:latest sh
     fi
