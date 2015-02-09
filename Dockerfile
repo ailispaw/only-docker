@@ -93,6 +93,8 @@ RUN apt-get install -y \
     xorriso
 
 # Start assembling root
+RUN mkdir -p /usr/src/root/etc
+COPY assets/os-release /usr/src/root/etc/
 COPY assets/init /usr/src/root/
 COPY assets/console-container.sh /usr/src/root/bin/
 RUN cd /usr/src/root/bin && \
