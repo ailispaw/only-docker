@@ -11,6 +11,7 @@ Running Docker as PID 1.  This is an experiment to see if I can build a system t
 | **Storage Driver** | overlay | aufs |
 | **TLS** | | ✓ |
 | **VirtualBox FS** | | ✓ |
+| **NFS Mount** | ✓ | |
 
 ## Running
 
