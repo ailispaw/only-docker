@@ -112,6 +112,26 @@ dropbear-$(DROPBEAR_VERSION).tar.bz2:
 test: install
 	$(VAGRANT) destroy -f $(BOX_TESTER)
 	-$(VAGRANT) up $(BOX_TESTER)
+	@echo "-----> docker version"
+	@docker version
+	@echo "-----> docker images -t"
+	@docker images -t
+	@echo "-----> docker ps -a"
+	@docker ps -a
+	@echo "-----> nc localhost 8080"
+	@nc localhost 8080
+	@echo "-----> /etc/os-release"
+	@vagrant ssh $(BOX_TESTER) -c "cat /etc/os-release"
+	@echo "-----> hostname"
+	@vagrant ssh $(BOX_TESTER) -c "hostname"
+	@echo "-----> /etc/network/interfaces"
+	@vagrant ssh $(BOX_TESTER) -c "cat /etc/network/interfaces"
+	@echo "-----> route"
+	@vagrant ssh $(BOX_TESTER) -c "route"
+	@echo "-----> df"
+	@vagrant ssh $(BOX_TESTER) -c "df"
+	@echo '-----> docker exec `docker ps -l -q` ls -l'
+	@docker exec `docker ps -l -q` ls -l
 
 clean:
 	$(VAGRANT) destroy -f

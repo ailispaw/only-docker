@@ -66,5 +66,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.name = "only-docker-test"
       vb.gui = true
     end
+
+    test.vm.provision :docker do |d|
+      d.pull_images "yungsang/busybox"
+      d.run "simple-echo",
+        image: "yungsang/busybox",
+        args: "-p 8080:8080",
+        cmd: "nc -p 8080 -l -l -e echo hello world!"
+    end
+
+    test.vm.network :forwarded_port, guest: 8080, host: 8080
   end
 end
