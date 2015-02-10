@@ -43,7 +43,6 @@ else
 fi
 
 modprobe overlay
-modprobe e1000
 
 echo 'nameserver 8.8.8.8' > /etc/resolv.conf
 
