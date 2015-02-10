@@ -71,7 +71,7 @@ RUN cd /usr/src && \
     export PATH=$PATH:/usr/src/cross-compiler-x86_64/bin && \
     export CC=x86_64-gcc && \
     ./configure --disable-zlib --host=x86_64 && \
-    make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert" MULTI=1 STATIC=1
+    make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" MULTI=1 STATIC=1
 
 # Install docker
 ENV DOCKER_VERSION 1.4.1
@@ -106,7 +106,7 @@ RUN cd /usr/src/root/bin && \
     cp /usr/src/iptables-1.4.21/iptables/xtables-multi iptables && \
     strip --strip-all iptables && \
     cp /usr/src/dropbear-$DROPBEAR_VERSION/dropbearmulti . && \
-    for i in dropbear dbclient dropbearkey dropbearconvert; do \
+    for i in dropbear dbclient dropbearkey dropbearconvert scp; do \
         ln -s dropbearmulti $i; \
     done && \
     cd .. && \
