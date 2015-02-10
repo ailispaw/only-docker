@@ -27,11 +27,20 @@ $ vagrant init -m only-docker
 $ vagrant up
 ```
 
+Or
+
+```
+$ vagrant init -m ailispaw/only-docker
+$ vagrant up
+```
+
+#### An example Vagrantfile
+
 ```ruby
 Vagrant.configure("2") do |config|
   config.vm.define "only-docker"
 
-  config.vm.box = "only-docker"
+  config.vm.box = "ailispaw/only-docker"
 
   config.vm.hostname = "only-docker"
 
