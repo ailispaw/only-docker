@@ -58,6 +58,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     test.vm.hostname = "only-docker-test"
 
+    test.vm.network "private_network", ip: "192.168.33.10"
+
     test.vm.provider :virtualbox do |vb|
       vb.name = "only-docker-test"
       vb.gui = true

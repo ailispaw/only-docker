@@ -15,6 +15,7 @@ mkdir -p /var/lib/docker
 mkdir -p /var/lib/only-docker
 mkdir -p /var/run
 mkdir -p /dev/pts
+mkdir -p /tmp
 
 mount -t proc none /proc
 mount -t sysfs none /sys

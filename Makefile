@@ -40,6 +40,14 @@ $(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME)
 	$(VBOXMNG) modifyvm $(BOX_PACKER) --nic1 nat --nictype1 82540EM --pae off
 	$(VBOXMNG) storagectl $(BOX_PACKER) --name "IDE Controller" --add ide
 	$(VBOXMNG) storagectl $(BOX_PACKER) --name "SATA Controller" --add sata
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype1 "82540EM"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype2 "82540EM"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype3 "82540EM"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype4 "82540EM"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype5 "82540EM"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype6 "82540EM"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype7 "82540EM"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype8 "82540EM"
 	#
 	# Attach HDD
 	#
