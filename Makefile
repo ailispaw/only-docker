@@ -24,7 +24,7 @@ iso: $(ISO_NAME)
 install: $(BOX_NAME)
 	$(VAGRANT) box add -f only-docker $(BOX_NAME)
 
-$(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME)
+$(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME) busybox_plugin.rb
 	-$(VBOXMNG) unregistervm $(BOX_PACKER) --delete
 	#
 	# Detach HDD
@@ -56,7 +56,7 @@ $(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME)
 	# Package Box
 	#
 	$(RM) only-docker.box
-	$(VAGRANT) package --base $(BOX_PACKER) --output $(BOX_NAME) --include $(ISO_NAME) --vagrantfile vagrantfile.tpl
+	$(VAGRANT) package --base $(BOX_PACKER) --output $(BOX_NAME) --include $(ISO_NAME),busybox_plugin.rb --vagrantfile vagrantfile.tpl
 	#
 	# Detach HDD
 	#

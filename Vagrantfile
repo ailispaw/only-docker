@@ -60,6 +60,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     test.vm.network "private_network", ip: "192.168.33.10"
 
+    test.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
+
     test.vm.provider :virtualbox do |vb|
       vb.name = "only-docker-test"
       vb.gui = true
