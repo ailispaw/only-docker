@@ -20,10 +20,25 @@ Currently I only have this running under VirtualBox.
 ### VirtualBox
 
 Download `only-docker.box` from [releases](https://github.com/ailispaw/only-docker/releases)
+
 ```
 $ vagrant box add only-docker only-docker.box
 $ vagrant init -m only-docker
 $ vagrant up
+```
+
+```ruby
+Vagrant.configure("2") do |config|
+  config.vm.define "only-docker"
+
+  config.vm.box = "only-docker"
+
+  config.vm.hostname = "only-docker"
+
+  config.vm.network "private_network", ip: "192.168.33.10"
+
+  config.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
+end
 ```
 
 ## Idea
