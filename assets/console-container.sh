@@ -1,30 +1,23 @@
 #!/bin/sh
 set -e
 
-CONSOLE_IMAGE=debian
-if [ "$IN_MEMORY" = "true" ]; then
-    CONSOLE_IMAGE=busybox
-fi
-
-while sleep 1; do
+echo "$(date): Waiting for Docker" >> /var/log/init.log
+while sleep 0.1; do
     if docker ps >/dev/null 2>&1; then
         break
     fi
 done
 
+echo "$(date): Setting up network" >> /var/log/init.log
 echo Setting up network
 if ! docker inspect dhcp >/dev/null 2>&1; then
     docker import - dhcp < /.dhcp.tar
-    docker tag dhcp console-image:latest
 fi
 docker run --rm -it --net host --cap-add NET_ADMIN dhcp udhcpc -i eth0
 
-echo Setting up console image
-if ! docker inspect console-image >/dev/null 2>&1; then
-    docker pull ${CONSOLE_IMAGE}
-    docker tag ${CONSOLE_IMAGE} console-image:latest
-fi
+docker tag -f dhcp console-image:latest
 
+echo "$(date): Starting up console" >> /var/log/init.log
 while true; do
     if docker inspect console >/dev/null 2>&1; then
         docker start -ai console

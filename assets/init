@@ -5,6 +5,9 @@ export PATH=/bin
 # Top secret option...
 export DOCKER_RAMDISK=true
 
+mkdir -p /var/log
+echo "$(date): Start init" > /var/log/init.log
+
 mount -t devtmpfs devtmpfs /dev
 
 #mkdir /etc
@@ -17,6 +20,7 @@ mkdir -p /var/run
 mkdir -p /dev/pts
 mkdir -p /tmp
 
+echo "$(date): Mounting system" >> /var/log/init.log
 mount -t proc none /proc
 mount -t sysfs none /sys
 mount -t tmpfs none /sys/fs/cgroup
@@ -27,11 +31,10 @@ for i in perf_event net_cls freezer devices blkio memory cpuacct cpu cpuset; do
     mount -t cgroup -o $i none /sys/fs/cgroup/$i
 done
 
+echo "$(date): Mounting HDD" >> /var/log/init.log
 mkdir -p /mnt/sda
 if ! mount -t ext4 /dev/sda /mnt/sda; then
     echo "Running from memory, this won't be good..."
-    export IN_MEMORY=true
-    sleep 2
 else
     rm -rf /var/lib/docker
     mkdir -p /mnt/sda/var/lib/docker
@@ -42,11 +45,13 @@ else
     ln -s /mnt/sda/var/lib/only-docker /var/lib/only-docker
 fi
 
+echo "$(date): Loading modules" >> /var/log/init.log
 modprobe overlay
 
 echo 'nameserver 8.8.8.8' > /etc/resolv.conf
 
 # Configure Dropbear SSH
+echo "$(date): Configuring Dropbear SSH" >> /var/log/init.log
 mkdir -p /etc/dropbear
 if [ ! -d /var/lib/only-docker/dropbear ]; then
     mv /etc/dropbear /var/lib/only-docker/
@@ -68,6 +73,7 @@ echo root:x:0:0:root:/root:/bin/sh > /etc/passwd
 chmod 755 /etc/passwd
 
 # Configuration for Vagrant
+echo "$(date): Configuring for Vagrant" >> /var/log/init.log
 mkdir -p /root/.ssh
 chmod 0700 /root/.ssh
 if [ ! -d /var/lib/only-docker/ssh ]; then
@@ -84,7 +90,9 @@ KEY
     chmod 0600 /root/.ssh/authorized_keys
 fi
 
+echo "$(date): Starting console" >> /var/log/init.log
 openvt /bin/sh
 openvt -s /bin/console-container.sh
 
+echo "$(date): Starting Docker" >> /var/log/init.log
 exec docker -d -D -s overlay -g /var/lib/docker -H unix:// -H tcp://0.0.0.0:2375
