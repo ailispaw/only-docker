@@ -4,9 +4,6 @@
 .gitignore
 .git/
 
-dist/
-kvm/
-build.sh
 LICENSE
 README.md
 
@@ -14,8 +11,8 @@ Makefile
 Vagrantfile
 .vagrant/
 vagrantfile.tpl
+busybox_plugin.rb
 
 *.iso
 *.vdi
 *.box
-*.zip
