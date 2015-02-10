@@ -132,6 +132,7 @@ test: install
 	@vagrant ssh $(BOX_TESTER) -c "df"
 	@echo '-----> docker exec `docker ps -l -q` ls -l'
 	@docker exec `docker ps -l -q` ls -l
+	$(VAGRANT) suspend $(BOX_TESTER)
 
 clean:
 	$(VAGRANT) destroy -f
