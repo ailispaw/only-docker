@@ -24,7 +24,7 @@ iso: $(ISO_NAME)
 install: $(BOX_NAME)
 	$(VAGRANT) box add -f only-docker $(BOX_NAME)
 
-$(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME)
+$(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME) busybox_plugin.rb
 	-$(VBOXMNG) unregistervm $(BOX_PACKER) --delete
 	#
 	# Detach HDD
@@ -40,6 +40,14 @@ $(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME)
 	$(VBOXMNG) modifyvm $(BOX_PACKER) --nic1 nat --nictype1 82540EM --pae off
 	$(VBOXMNG) storagectl $(BOX_PACKER) --name "IDE Controller" --add ide
 	$(VBOXMNG) storagectl $(BOX_PACKER) --name "SATA Controller" --add sata
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype1 "virtio"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype2 "virtio"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype3 "virtio"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype4 "virtio"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype5 "virtio"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype6 "virtio"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype7 "virtio"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype8 "virtio"
 	#
 	# Attach HDD
 	#
@@ -48,7 +56,7 @@ $(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME)
 	# Package Box
 	#
 	$(RM) only-docker.box
-	$(VAGRANT) package --base $(BOX_PACKER) --output $(BOX_NAME) --include $(ISO_NAME) --vagrantfile vagrantfile.tpl
+	$(VAGRANT) package --base $(BOX_PACKER) --output $(BOX_NAME) --include $(ISO_NAME),busybox_plugin.rb --vagrantfile vagrantfile.tpl
 	#
 	# Detach HDD
 	#
