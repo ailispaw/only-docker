@@ -74,7 +74,7 @@ RUN cd /usr/src && \
     make PROGRAMS="dropbear dbclient dropbearkey dropbearconvert scp" MULTI=1 STATIC=1
 
 # Install docker
-ENV DOCKER_VERSION 1.4.1
+ENV DOCKER_VERSION 1.5.0
 RUN apt-get install -y ca-certificates
 COPY docker-$DOCKER_VERSION.tgz /usr/src/
 RUN mkdir -p /usr/src/root/bin && \
