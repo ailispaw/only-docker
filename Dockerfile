@@ -14,7 +14,7 @@ RUN cd /usr/src && \
     make -j4 LDFLAGS="-all-static"
 
 # Build kernel
-ENV KERNEL_VERSION 3.18.6
+ENV KERNEL_VERSION 3.18.7
 COPY linux-$KERNEL_VERSION.tar.xz /usr/src/
 RUN cd /usr/src && \
     tar xJf linux-$KERNEL_VERSION.tar.xz
