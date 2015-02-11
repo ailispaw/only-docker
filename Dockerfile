@@ -100,7 +100,7 @@ COPY assets/console-container.sh /usr/src/root/bin/
 RUN cd /usr/src/root/bin && \
     cp /usr/src/busybox-$BUSYBOX_VERSION/busybox . && \
     chmod u+s busybox && \
-    for i in sh mount mkdir modprobe date; do \
+    for i in sh mount mkdir modprobe date ps; do \
         ln -s busybox $i; \
     done && \
     cp /usr/src/iptables-1.4.21/iptables/xtables-multi iptables && \
