@@ -5,7 +5,7 @@ Running Docker as PID 1.  This is an experiment to see if I can build a system t
 | | Only Docker | Boot2Docker |
 | --- | --- | --- |
 | **Size** | 17 MB | 23 MB |
-| **Kernel** | 3.18.6 x86_64 | 3.18.5 x86_64 |
+| **Kernel** | 3.18.7 x86_64 | 3.18.5 x86_64 |
 | **User Land** | BusyBox v1.23.1 x86_64 | Tiny Core Linux v5.4 x86 |
 | **Docker** | 1.5.0 | 1.5.0 |
 | **Storage Driver** | overlay | aufs |
