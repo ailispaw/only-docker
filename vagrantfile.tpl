@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
 
     vb.customize "pre-boot", [
       "storageattach", :id,
-      "--storagectl", "IDE Controller",
+      "--storagectl", "SATA Controller",
       "--port", "0",
       "--device", "0",
       "--type", "dvddrive",

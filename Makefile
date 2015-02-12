@@ -36,22 +36,15 @@ $(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME) busybox_plugin.rb
 	# Create VM
 	#
 	$(VBOXMNG) createvm --name $(BOX_PACKER) --register
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --ostype Linux26_64 --memory 512 --ioapic on --boot1 dvd
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nic1 nat --nictype1 82540EM --pae off
-	$(VBOXMNG) storagectl $(BOX_PACKER) --name "IDE Controller" --add ide
-	$(VBOXMNG) storagectl $(BOX_PACKER) --name "SATA Controller" --add sata
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype1 "virtio"
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype2 "virtio"
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype3 "virtio"
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype4 "virtio"
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype5 "virtio"
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype6 "virtio"
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype7 "virtio"
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nictype8 "virtio"
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --ostype Linux26_64 --memory 512 --ioapic on
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --boot1 dvd --boot2 disk --boot3 none --boot4 none
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nic1 nat --nictype1 virtio --pae off
+	for i in 2 3 4 5 6 7 8; do $(VBOXMNG) modifyvm $(BOX_PACKER) --nictype$${i} virtio; done
+	$(VBOXMNG) storagectl $(BOX_PACKER) --name "SATA Controller" --add sata --portcount 4
 	#
 	# Attach HDD
 	#
-	$(VBOXMNG) storageattach $(BOX_PACKER) --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium $(HDD_NAME)
+	$(VBOXMNG) storageattach $(BOX_PACKER) --storagectl "SATA Controller" --port 1 --device 0 --type hdd --medium $(HDD_NAME)
 	#
 	# Package Box
 	#
@@ -60,7 +53,7 @@ $(BOX_NAME): vagrantfile.tpl $(ISO_NAME) $(HDD_NAME) busybox_plugin.rb
 	#
 	# Detach HDD
 	#
-	$(VBOXMNG) storageattach $(BOX_PACKER) --storagectl "SATA Controller" --port 0 --device 0 --type hdd --medium none
+	$(VBOXMNG) storageattach $(BOX_PACKER) --storagectl "SATA Controller" --port 1 --device 0 --type hdd --medium none
 	$(VBOXMNG) closemedium disk $(HDD_NAME)
 	#
 	# Cleanup
