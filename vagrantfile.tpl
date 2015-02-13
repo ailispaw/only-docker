@@ -1,7 +1,7 @@
 require_relative "busybox_plugin.rb"
 
 Vagrant.configure("2") do |config|
-  config.ssh.shell = "sh"
+  config.ssh.shell = "sh -l"
   config.ssh.username = "root"
 
   # Forward the Docker port
