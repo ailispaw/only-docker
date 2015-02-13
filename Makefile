@@ -80,6 +80,7 @@ $(ISO_NAME): Dockerfile \
 	assets/console-container.sh assets/init assets/isolinux.cfg assets/kernel_config assets/os-release \
 	linux-$(KERNEL_VERSION).tar.xz iptables-1.4.21.tar.bz2 docker-$(DOCKER_VERSION).tgz \
 	cross-compiler-x86_64.tar.bz2 busybox-$(BUSYBOX_VERSION).tar.bz2 dropbear-$(DROPBEAR_VERSION).tar.bz2
+	$(VAGRANT) suspend
 	$(VAGRANT) up $(ISO_BUILDER) --no-provision
 	$(VAGRANT) provision $(ISO_BUILDER)
 	$(VAGRANT) suspend $(ISO_BUILDER)
