@@ -57,6 +57,8 @@ fi
 echo "$(date): Loading modules" >> /var/log/init.log
 modprobe overlay
 
+hostname only-docker
+
 echo 'nameserver 8.8.8.8' > /etc/resolv.conf
 
 # Configure Dropbear SSH
