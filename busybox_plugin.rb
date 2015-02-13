@@ -70,8 +70,6 @@ module VagrantPlugins
 
         def self.configure_networks(machine, networks)
           machine.communicate.tap do |comm|
-            comm.sudo("mkdir -p /etc/network")
-            comm.sudo("touch /etc/network/interfaces")
             # First, remove any previous network modifications
             # from the interface file.
             comm.sudo("sed -e '/^#VAGRANT-BEGIN/,$ d' /etc/network/interfaces > /tmp/vagrant-network-interfaces.pre")
