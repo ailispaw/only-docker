@@ -24,6 +24,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       end
     end
 
+    # Adjusting datetime before provisioning.
+    iso.vm.provision :shell do |sh|
+      sh.inline = "timeout -t 10 sudo /usr/local/bin/ntpclient -s -h pool.ntp.org; date"
+    end
+
     iso.vm.provision :docker do |docker|
       docker.build_image "/vagrant/", args: "-t only-docker"
       docker.run "only-docker", args: "--rm", cmd: "> /vagrant/only-docker.iso",
@@ -79,6 +84,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         info "Adjusting datetime after suspend and resume."
         run_remote "timeout -t 10 ntpd -n -q -p pool.ntp.org || true"
       end
+    end
+
+    # Adjusting datetime before provisioning.
+    test.vm.provision :shell do |sh|
+      sh.privileged = false
+      sh.inline = "timeout -t 10 ntpd -n -q -p pool.ntp.org || true"
     end
 
     test.vm.provision :docker do |d|

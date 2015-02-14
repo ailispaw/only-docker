@@ -54,6 +54,12 @@ Vagrant.configure("2") do |config|
       run_remote "timeout -t 10 ntpd -n -q -p pool.ntp.org || true"
     end
   end
+
+  # Adjusting datetime before provisioning.
+  config.vm.provision :shell do |sh|
+    sh.privileged = false
+    sh.inline = "timeout -t 10 ntpd -n -q -p pool.ntp.org || true"
+  end
 end
 ```
 
