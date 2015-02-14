@@ -17,6 +17,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     iso.vm.network "private_network", ip: "192.168.33.10"
     iso.vm.synced_folder ".", "/vagrant", type: "nfs"
 
+    if Vagrant.has_plugin?("vagrant-triggers") then
+      iso.trigger.after [:up, :resume] do
+        info "Adjusting datetime after suspend and resume."
+        run_remote "timeout -t 10 sudo /usr/local/bin/ntpclient -s -h pool.ntp.org; date"
+      end
+    end
+
     iso.vm.provision :docker do |docker|
       docker.build_image "/vagrant/", args: "-t only-docker"
       docker.run "only-docker", args: "--rm", cmd: "> /vagrant/only-docker.iso",
@@ -65,6 +72,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     test.vm.provider :virtualbox do |vb|
       vb.name = "only-docker-test"
       vb.gui = true
+    end
+
+    if Vagrant.has_plugin?("vagrant-triggers") then
+      test.trigger.after [:up, :resume] do
+        info "Adjusting datetime after suspend and resume."
+        run_remote "timeout -t 10 ntpd -n -q -p pool.ntp.org || true"
+      end
     end
 
     test.vm.provision :docker do |d|

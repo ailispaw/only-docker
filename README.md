@@ -47,6 +47,13 @@ Vagrant.configure("2") do |config|
   config.vm.network "private_network", ip: "192.168.33.10"
 
   config.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ["nolock", "vers=3", "udp"]
+
+  if Vagrant.has_plugin?("vagrant-triggers") then
+    config.trigger.after [:up, :resume] do
+      info "Adjusting datetime after suspend and resume."
+      run_remote "timeout -t 10 ntpd -n -q -p pool.ntp.org || true"
+    end
+  end
 end
 ```
 
