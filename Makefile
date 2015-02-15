@@ -76,7 +76,7 @@ $(HDD_NAME):
 	$(VBOXMNG) closemedium disk $(HDD_NAME)
 	$(VAGRANT) destroy -f $(HDD_BUILDER)
 
-$(ISO_NAME): Dockerfile \
+$(ISO_NAME): Dockerfile assets/motd \
 	assets/console-container.sh assets/init assets/isolinux.cfg assets/kernel_config assets/os-release \
 	linux-$(KERNEL_VERSION).tar.xz iptables-1.4.21.tar.bz2 docker-$(DOCKER_VERSION).tgz \
 	cross-compiler-x86_64.tar.bz2 busybox-$(BUSYBOX_VERSION).tar.bz2 dropbear-$(DROPBEAR_VERSION).tar.bz2
@@ -115,15 +115,15 @@ test: install
 	@echo "-----> nc localhost 8080"
 	@nc localhost 8080
 	@echo "-----> /etc/os-release"
-	@vagrant ssh $(BOX_TESTER) -c "cat /etc/os-release"
+	@vagrant ssh $(BOX_TESTER) -c "cat /etc/os-release" -- -T
 	@echo "-----> hostname"
-	@vagrant ssh $(BOX_TESTER) -c "hostname"
+	@vagrant ssh $(BOX_TESTER) -c "hostname" -- -T
 	@echo "-----> /etc/network/interfaces"
-	@vagrant ssh $(BOX_TESTER) -c "cat /etc/network/interfaces"
+	@vagrant ssh $(BOX_TESTER) -c "cat /etc/network/interfaces" -- -T
 	@echo "-----> route"
-	@vagrant ssh $(BOX_TESTER) -c "route"
+	@vagrant ssh $(BOX_TESTER) -c "route" -- -T
 	@echo "-----> df"
-	@vagrant ssh $(BOX_TESTER) -c "df"
+	@vagrant ssh $(BOX_TESTER) -c "df" -- -T
 	@echo '-----> docker exec `docker ps -l -q` ls -l'
 	@docker exec `docker ps -l -q` ls -l
 	$(VAGRANT) suspend $(BOX_TESTER)
