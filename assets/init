@@ -62,7 +62,11 @@ modprobe overlay
 
 hostname only-docker
 
-echo 'nameserver 8.8.8.8' > /etc/resolv.conf
+cat <<EOF > /etc/resolv.conf
+nameserver 8.8.8.8
+nameserver 8.8.4.4
+options single-request-reopen
+EOF
 
 # Configure Dropbear SSH
 echo "$(date): Configuring Dropbear SSH" >> /var/log/init.log
@@ -81,7 +85,6 @@ if [ ! -f /etc/dropbear/dropbear_dss_host_key ]; then
   dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key
 fi
 dropbear -s
-
 
 # Configuration for Vagrant
 echo "$(date): Configuring for Vagrant" >> /var/log/init.log
