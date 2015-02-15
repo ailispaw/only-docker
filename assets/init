@@ -57,6 +57,14 @@ else
     ln -s /mnt/sda/var/lib/only-docker /var/lib/only-docker
 fi
 
+touch /etc/profile
+if [ ! -f /var/lib/only-docker/profile ]; then
+    mv /etc/profile /var/lib/only-docker/
+else
+    rm -f /etc/profile
+fi
+ln -s /var/lib/only-docker/profile /etc/profile
+
 echo "$(date): Loading modules" >> /var/log/init.log
 modprobe overlay
 
@@ -109,4 +117,24 @@ openvt /bin/sh
 openvt -s /bin/console-container.sh
 
 echo "$(date): Starting Docker" >> /var/log/init.log
-exec docker -d -D -s overlay -g /var/lib/docker -H unix:// -H tcp://0.0.0.0:2375
+echo "$(date): Reload /etc/profile" >> /var/log/init.log
+cat /etc/profile >> /var/log/init.log
+source /etc/profile
+if [ -z "$DOCKER_STORAGE" ]; then
+    DOCKER_STORAGE="overlay"
+fi
+if [ -z "$DOCKER_DIR" ]; then
+    DOCKER_DIR="/var/lib/docker"
+fi
+if [ -z "$DOCKER_HOST" ]; then
+    DOCKER_HOST="-H unix://"
+fi
+if [ -z "$DOCKER_ULIMITS" ]; then
+    DOCKER_ULIMITS=1048576
+fi
+ulimit -n $DOCKER_ULIMITS
+ulimit -p $DOCKER_ULIMITS
+echo "$(date): ulimit" >> /var/log/init.log
+ulimit -a >> /var/log/init.log
+echo "$(date): docker -d -D -s $DOCKER_STORAGE -g \"$DOCKER_DIR\" $DOCKER_HOST $DOCKER_EXTRA_ARGS" >> /var/log/init.log
+exec docker -d -D -s $DOCKER_STORAGE -g "$DOCKER_DIR" $DOCKER_HOST $DOCKER_EXTRA_ARGS
