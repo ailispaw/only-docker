@@ -76,7 +76,7 @@ $(HDD_NAME):
 	$(VBOXMNG) closemedium disk $(HDD_NAME)
 	$(VAGRANT) destroy -f $(HDD_BUILDER)
 
-$(ISO_NAME): Dockerfile assets/motd \
+$(ISO_NAME): Dockerfile assets/motd assets/profile \
 	assets/console-container.sh assets/init assets/isolinux.cfg assets/kernel_config assets/os-release \
 	linux-$(KERNEL_VERSION).tar.xz iptables-1.4.21.tar.bz2 docker-$(DOCKER_VERSION).tgz \
 	cross-compiler-x86_64.tar.bz2 busybox-$(BUSYBOX_VERSION).tar.bz2 dropbear-$(DROPBEAR_VERSION).tar.bz2
