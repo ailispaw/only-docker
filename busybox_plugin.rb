@@ -21,6 +21,7 @@ module VagrantPlugins
       class Halt
         def self.halt(machine)
           begin
+            machine.communicate.sudo("docker stop $(docker ps -q)")
             machine.communicate.sudo("poweroff -f")
           rescue IOError
             # Do nothing, because it probably means the machine shut down
