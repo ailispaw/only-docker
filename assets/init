@@ -43,18 +43,27 @@ for i in perf_event net_cls freezer devices blkio memory cpuacct cpu cpuset; do
     mount -t cgroup -o $i none /sys/fs/cgroup/$i
 done
 
-echo "$(date): Mounting HDD" >> /var/log/init.log
-mkdir -p /mnt/sda
-if ! mount -t ext4 /dev/sda /mnt/sda; then
-    echo "Running from memory, this won't be good..."
-else
-    rm -rf /var/lib/docker
-    mkdir -p /mnt/sda/var/lib/docker
-    ln -s /mnt/sda/var/lib/docker /var/lib/docker
+DEVICE=$(blkid | grep -e 'LABEL="OD-DATA"' | head -n 1 | sed 's/:.*//')
+if [ -n "$DEVICE" ]; then
+    PARTNAME=$(echo "$DEVICE" | sed 's/.*\///')
+    echo "$(date): Mounting HDD /dev/$PARTNAME" >> /var/log/init.log
+    mkdir -p /mnt/$PARTNAME
+    if ! mount -t ext4 /dev/$PARTNAME /mnt/$PARTNAME; then
+        echo "Running from memory, this won't be good..."
+    else
+        rm -rf /var/lib/docker
+        mkdir -p /mnt/$PARTNAME/var/lib/docker
+        ln -s /mnt/$PARTNAME/var/lib/docker /var/lib/docker
 
-    rm -rf /var/lib/only-docker
-    mkdir -p /mnt/sda/var/lib/only-docker
-    ln -s /mnt/sda/var/lib/only-docker /var/lib/only-docker
+        rm -rf /var/lib/only-docker
+        mkdir -p /mnt/$PARTNAME/var/lib/only-docker
+        ln -s /mnt/$PARTNAME/var/lib/only-docker /var/lib/only-docker
+    fi
+fi
+DEVICE=$(blkid | grep -e 'LABEL="OD-SWAP"' | head -n 1 | sed 's/:.*//')
+if [ -n "$DEVICE" ]; then
+    echo "$(date): Enable SWAP $DEVICE" >> /var/log/init.log
+    swapon $DEVICE
 fi
 
 touch /etc/profile

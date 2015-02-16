@@ -60,7 +60,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     hdd.vm.provision :shell do |sh|
       sh.inline = <<-EOT
-        sudo mkfs.ext4 -F /dev/sdb
+        (echo n; echo p; echo 2; echo ; echo +1000M ; echo w;) | sudo fdisk /dev/sdb
+        (echo t; echo 82) | sudo fdisk /dev/sdb
+        sudo mkswap -L OD-SWAP /dev/sdb2
+        (echo n; echo p; echo 1; echo ; echo ; echo w;) | sudo fdisk /dev/sdb
+        (echo a; echo 1; echo w;) | sudo fdisk /dev/sdb
+        sudo mkfs.ext4 -F -L OD-DATA /dev/sdb1
       EOT
     end
   end
