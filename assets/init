@@ -69,6 +69,7 @@ echo "$(date): Loading modules" >> /var/log/init.log
 modprobe overlay
 
 hostname only-docker
+ifconfig lo 127.0.0.1
 
 cat <<EOF > /etc/resolv.conf
 nameserver 8.8.8.8
