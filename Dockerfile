@@ -93,7 +93,7 @@ RUN apt-get install -y \
     xorriso
 
 # Start assembling root
-ENV ONLY_DOCKER_VERSION 0.7.0
+ENV ONLY_DOCKER_VERSION 0.8.0
 RUN mkdir -p /usr/src/root/etc
 COPY assets/os-release /usr/src/root/etc/
 RUN sed -e "s/%ONLY_DOCKER_VERSION%/$ONLY_DOCKER_VERSION/" -i /usr/src/root/etc/os-release && \
