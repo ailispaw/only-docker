@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     # Adjusting datetime before provisioning.
-    iso.vm.provision :shell do |sh|
+    iso.vm.provision :shell, run: "always" do |sh|
       sh.inline = "timeout -t 10 sudo /usr/local/bin/ntpclient -s -h pool.ntp.org; date"
     end
 
@@ -87,7 +87,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     # Adjusting datetime before provisioning.
-    test.vm.provision :shell do |sh|
+    test.vm.provision :shell, run: "always" do |sh|
       sh.privileged = false
       sh.inline = "timeout -t 10 ntpd -n -q -p pool.ntp.org || true"
     end
