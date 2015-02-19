@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
       "--port", "0",
       "--device", "0",
       "--type", "dvddrive",
-      "--medium", File.expand_path("../only-docker.iso", __FILE__),
+      "--medium", File.expand_path("../../only-docker.iso", __FILE__),
     ]
   end
 end

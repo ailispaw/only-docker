@@ -30,7 +30,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     iso.vm.provision :docker do |docker|
-      docker.build_image "/vagrant/", args: "-t only-docker"
+      docker.build_image "/vagrant/iso/", args: "-t only-docker"
       docker.run "only-docker", args: "--rm", cmd: "> /vagrant/only-docker.iso",
         auto_assign_name: false, daemonize: false
     end
