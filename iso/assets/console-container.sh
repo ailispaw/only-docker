@@ -1,25 +1,25 @@
 #!/bin/sh
 set -e
 
-echo "$(date): Waiting for Docker" >> /var/log/init.log
+logger -s -p user.info -t "console[$$]" "Waiting for Docker"
 while sleep 0.1; do
     if docker ps >/dev/null 2>&1; then
         break
     fi
 done
 
-echo "$(date): Setting up network" >> /var/log/init.log
-echo Setting up network
+logger -s -p user.info -t "console[$$]" "Setting up network"
 if ! docker inspect dhcp >/dev/null 2>&1; then
     docker import - dhcp < /.dhcp.tar
 fi
 docker run --rm -it --net host --cap-add NET_ADMIN dhcp udhcpc -i eth0
 
+logger -s -p user.info -t "console[$$]" "Starting up Dropbear SSH"
 dropbear -s
 
 docker tag -f dhcp console-image:latest
 
-echo "$(date): Starting up console" >> /var/log/init.log
+logger -s -p user.info -t "console[$$]" "Starting up console"
 while true; do
     if docker inspect console >/dev/null 2>&1; then
         docker start -ai console

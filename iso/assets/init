@@ -5,8 +5,12 @@ export PATH=/bin
 # Top secret option...
 export DOCKER_RAMDISK=true
 
+mount -t devtmpfs devtmpfs /dev
+
 mkdir -p /var/log
-echo "$(date): Start init" > /var/log/init.log
+syslogd
+sleep 1
+logger -s -p user.info -t "init[$$]" "Start init"
 
 # Add root user & groups
 touch /etc/group
@@ -20,8 +24,6 @@ addgroup -S -g 50 staff
 touch /var/log/lastlog
 touch /var/log/wtmp
 
-mount -t devtmpfs devtmpfs /dev
-
 mkdir /proc
 mkdir /sys
 mkdir /rw
@@ -34,7 +36,7 @@ mkdir -p /dev/pts
 mkdir -p /etc/network
 touch /etc/network/interfaces
 
-echo "$(date): Mounting system" >> /var/log/init.log
+logger -s -p user.info -t "init[$$]" "Mounting system"
 mount -t proc none /proc
 mount -t sysfs none /sys
 mount -t tmpfs none /sys/fs/cgroup
@@ -49,10 +51,10 @@ done
 DEVICE=$(blkid | grep -e 'LABEL="OD-DATA"' | head -n 1 | sed 's/:.*//')
 if [ -n "$DEVICE" ]; then
     PARTNAME=$(echo "$DEVICE" | sed 's/.*\///')
-    echo "$(date): Mounting HDD /dev/$PARTNAME" >> /var/log/init.log
+    logger -s -p user.info -t "init[$$]" "Mounting HDD /dev/$PARTNAME"
     mkdir -p /mnt/$PARTNAME
     if ! mount -t ext4 /dev/$PARTNAME /mnt/$PARTNAME; then
-        echo "Running from memory, this won't be good..."
+        logger -s -p user.info -t "init[$$]" "Running from memory, this won't be good..."
     else
         rm -rf /var/lib/docker
         mkdir -p /mnt/$PARTNAME/var/lib/docker
@@ -65,7 +67,7 @@ if [ -n "$DEVICE" ]; then
 fi
 DEVICE=$(blkid | grep -e 'LABEL="OD-SWAP"' | head -n 1 | sed 's/:.*//')
 if [ -n "$DEVICE" ]; then
-    echo "$(date): Enable SWAP $DEVICE" >> /var/log/init.log
+    logger -s -p user.info -t "init[$$]" "Enable SWAP $DEVICE"
     swapon $DEVICE
 fi
 
@@ -77,7 +79,7 @@ else
 fi
 ln -s /var/lib/only-docker/profile /etc/profile
 
-echo "$(date): Loading modules" >> /var/log/init.log
+logger -s -p user.info -t "init[$$]" "Loading modules"
 modprobe overlay
 
 hostname only-docker
@@ -89,8 +91,7 @@ nameserver 8.8.4.4
 options single-request-reopen
 EOF
 
-# Configure Dropbear SSH
-echo "$(date): Configuring Dropbear SSH" >> /var/log/init.log
+logger -s -p user.info -t "init[$$]" "Configuring Dropbear SSH"
 mkdir -p /etc/dropbear
 if [ ! -d /var/lib/only-docker/dropbear ]; then
     mv /etc/dropbear /var/lib/only-docker/
@@ -109,8 +110,7 @@ if [ ! -f /etc/dropbear/dropbear_dss_host_key ]; then
     dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key
 fi
 
-# Configuration for Vagrant
-echo "$(date): Configuring for Vagrant" >> /var/log/init.log
+logger -s -p user.info -t "init[$$]" "Configuring for Vagrant"
 mkdir -p /root/.ssh
 chmod 0700 /root/.ssh
 if [ ! -d /var/lib/only-docker/ssh ]; then
@@ -127,14 +127,13 @@ KEY
     chmod 0600 /root/.ssh/authorized_keys
 fi
 
-echo "$(date): Starting console" >> /var/log/init.log
+logger -s -p user.info -t "init[$$]" "Starting console"
 openvt /bin/sh
 openvt -s /bin/console-container.sh
 
-echo "$(date): Starting Docker" >> /var/log/init.log
-echo "$(date): Reload /etc/profile" >> /var/log/init.log
-cat /etc/profile >> /var/log/init.log
+logger -s -p user.info -t "init[$$]" "Reloading /etc/profile"
 source /etc/profile
+
 if [ -z "$DOCKER_STORAGE" ]; then
     DOCKER_STORAGE="overlay"
 fi
@@ -147,9 +146,10 @@ fi
 if [ -z "$DOCKER_ULIMITS" ]; then
     DOCKER_ULIMITS=1048576
 fi
+
+logger -s -p user.info -t "init[$$]" "Setting ulimit $DOCKER_ULIMITS"
 ulimit -n $DOCKER_ULIMITS
 ulimit -p $DOCKER_ULIMITS
-echo "$(date): ulimit" >> /var/log/init.log
-ulimit -a >> /var/log/init.log
-echo "$(date): docker -d -D -s $DOCKER_STORAGE -g \"$DOCKER_DIR\" $DOCKER_HOST $DOCKER_EXTRA_ARGS" >> /var/log/init.log
+
+logger -s -p user.info -t "init[$$]" "Starting Docker -d -D -s $DOCKER_STORAGE -g \"$DOCKER_DIR\" $DOCKER_HOST $DOCKER_EXTRA_ARGS"
 exec docker -d -D -s $DOCKER_STORAGE -g "$DOCKER_DIR" $DOCKER_HOST $DOCKER_EXTRA_ARGS
