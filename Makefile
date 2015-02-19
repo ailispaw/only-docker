@@ -106,9 +106,12 @@ iso/busybox-$(BUSYBOX_VERSION).tar.bz2:
 iso/dropbear-$(DROPBEAR_VERSION).tar.bz2:
 	cd iso && curl -OL https://matt.ucc.asn.au/dropbear/releases/dropbear-$(DROPBEAR_VERSION).tar.bz2
 
-test: install
+boot_test: install
 	$(VAGRANT) destroy -f $(BOX_TESTER)
-	-$(VAGRANT) up $(BOX_TESTER)
+	$(VAGRANT) up $(BOX_TESTER) --no-provision
+
+test: boot_test
+	$(VAGRANT) provision $(BOX_TESTER)
 	@echo "-----> docker version"
 	@docker version
 	@echo "-----> docker images -t"
