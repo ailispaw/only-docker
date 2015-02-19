@@ -127,6 +127,13 @@ KEY
     chmod 0600 /root/.ssh/authorized_keys
 fi
 
+logger -s -p user.info -t "init[$$]" "Waiting for networking"
+while sleep 0.1; do
+    if grep -qs eth0 /proc/net/dev; then
+        break
+    fi
+done
+
 logger -s -p user.info -t "init[$$]" "Starting console"
 openvt /bin/sh
 openvt -s /bin/console-container.sh
