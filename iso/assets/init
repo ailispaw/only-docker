@@ -134,6 +134,9 @@ while sleep 0.1; do
     fi
 done
 
+sync
+sleep 5
+
 logger -s -p user.info -t "init[$$]" "Starting console"
 openvt /bin/sh
 openvt -s /bin/console-container.sh
