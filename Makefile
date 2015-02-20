@@ -36,10 +36,12 @@ $(BOX_NAME): $(ISO_NAME) $(HDD_NAME) box/vagrantfile.tpl box/busybox_plugin.rb
 	# Create VM
 	#
 	$(VBOXMNG) createvm --name $(BOX_PACKER) --register
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --ostype Linux26_64 --memory 512 --ioapic on
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --ostype Linux26_64 --memory 512
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --pae on --ioapic on --hpet on
 	$(VBOXMNG) modifyvm $(BOX_PACKER) --boot1 dvd --boot2 disk --boot3 none --boot4 none
-	$(VBOXMNG) modifyvm $(BOX_PACKER) --nic1 nat --nictype1 virtio --pae off
+	$(VBOXMNG) modifyvm $(BOX_PACKER) --nic1 nat --nictype1 virtio
 	for i in 2 3 4 5 6 7 8; do $(VBOXMNG) modifyvm $(BOX_PACKER) --nictype$${i} virtio; done
+	$(VBOXMNG) setextradata $(BOX_PACKER) VBoxInternal/CPUM/EnableHVP 1
 	$(VBOXMNG) storagectl $(BOX_PACKER) --name "SATA Controller" --add sata --portcount 4
 	#
 	# Attach HDD
