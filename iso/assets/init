@@ -17,6 +17,9 @@ addgroup -S -g 0 root
 adduser -S -u 0 -G root -h /root -s /bin/sh -D root
 addgroup -S -g 50 staff
 
+touch /var/log/lastlog
+touch /var/log/wtmp
+
 mount -t devtmpfs devtmpfs /dev
 
 mkdir /proc
