@@ -15,6 +15,8 @@ if ! docker inspect dhcp >/dev/null 2>&1; then
 fi
 docker run --rm -it --net host --cap-add NET_ADMIN dhcp udhcpc -i eth0
 
+dropbear -s
+
 docker tag -f dhcp console-image:latest
 
 echo "$(date): Starting up console" >> /var/log/init.log

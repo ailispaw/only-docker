@@ -108,7 +108,6 @@ fi
 if [ ! -f /etc/dropbear/dropbear_dss_host_key ]; then
     dropbearkey -t dss -f /etc/dropbear/dropbear_dss_host_key
 fi
-dropbear -s
 
 # Configuration for Vagrant
 echo "$(date): Configuring for Vagrant" >> /var/log/init.log
