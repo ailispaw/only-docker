@@ -67,6 +67,7 @@ $(HDD_NAME):
 	#
 	# Create HDD
 	#
+	$(VAGRANT) suspend
 	$(VAGRANT) up $(HDD_BUILDER) --no-provision
 	$(VAGRANT) provision $(HDD_BUILDER)
 	#
