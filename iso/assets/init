@@ -96,6 +96,9 @@ else # if it exists, remove the ramdisk's ssh config, so that the hard drive's i
 fi
 ln -s /var/lib/only-docker/dropbear /etc/dropbear
 
+if [ ! -f /etc/dropbear/dropbear_dss_host_key ]; then
+    dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key
+fi
 if [ ! -f /etc/dropbear/dropbear_rsa_host_key ]; then
     dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key
 fi
